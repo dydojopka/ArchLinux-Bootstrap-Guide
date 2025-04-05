@@ -180,14 +180,14 @@ nano /etc/locale.gen
 ```shell
 nano /etc/locale.gen
 ```
->Раскомментировать:
->```shell
->#en_US.UTF-8 UTF-8
->```
->и другие необходимые UTF-8 локали, например:
->```shell
->#ru_RU.UTF-8 UTF-8
->```
+> Раскомментировать:
+> ```shell
+> #en_US.UTF-8 UTF-8
+> ```
+> и другие необходимые UTF-8 локали, например:
+> ```shell
+> #ru_RU.UTF-8 UTF-8
+> ```
 
 Сгенерировать локали:
 ```shell
@@ -199,18 +199,19 @@ locale-gen
 nano /etc/locale.conf
 ```
 > и задать переменной ```LANG``` необходимое значение:
->```shell
->LANG=ru_RU.UTF-8
+> ```shell
+> LANG=ru_RU.UTF-8
+> ```
 
 Сделайте изменения раскладки и шрифта постоянными:
 ```shell
 nano /etc/vconsole.conf
 ```
->прописав их в файле ```vconsole.conf```:
->```shell
->KEYMAP=ru
->FONT=cyr-sun16
->```
+> прописав их в файле ```vconsole.conf```:
+> ```shell
+> KEYMAP=ru
+> FONT=cyr-sun16
+> ```
 
 ***
 
@@ -219,8 +220,8 @@ nano /etc/vconsole.conf
 ```shell
 nano /etc/hostname
 ```
->и написать туда:  
->*имявашегохоста*
+> и написать туда:  
+> *имявашегохоста*
 
 Установить ```NetworkManager```:
 ```shell
@@ -238,6 +239,9 @@ systemctl enable NetworkManager
 ```shell
 passwd
 ```
+
+***
+
 ## Новый пользователь
 Создать нового пользователя:
 ```shell
@@ -256,9 +260,9 @@ pacman -S sudo
 EDITOR=nano visudo
 ```
 > и раскомментировать строку:
->```shell
-># %wheel ALL=(ALL:ALL) ALL
->```
+> ```shell
+> # %wheel ALL=(ALL:ALL) ALL
+> ```
 
 ***
 
