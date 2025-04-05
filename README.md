@@ -1,2 +1,300 @@
+<div align="center">
+
 # ArchLinux-Bootstrap-Guide
-My memo with sequence of commands for installing arch linux
+
+</div>
+
+# 1. Перед установкой
+
+## Установка раскладки клавиатуры и шрифта
+```shell
+loadkeys ru
+setfont ter-c32b
+```
+
+## Соединение с интернетом
+Запуск в интерактивном режиме [iwd]#: 
+```shell
+iwctl
+```
+
+Запросить список всех Wi-Fi устройств:
+```shell
+device list
+```
+> [!IMPORTANT]
+> Если устройство или соответствующий адаптер выключен, включите его:
+> ```shell
+> device *устройство* set-property Powered on
+> adapter *адаптер* set-property Powered on
+> ```
+
+Запустить сканирование сети (команда ничего не выведет):
+```shell
+station *устройство* scan
+```
+
+Вывести список обнаруженных сетей:
+```shell
+station *устройство* get-networks
+```
+
+Подключится к сети:
+```shell
+station устройство connect *SSID*
+```
+
+Выйти из [iwd]: 
+```shell
+exit
+```
+
+Проверка подключения (можно использовать любой ресурс):
+```shell
+ping 8.8.8.8
+```
+
+
+## Разметка дисков
+Чтобы посмотреть список накопителей, используйте fdisk.
+```shell
+fdisk -l
+```
+или
+```shell
+lsblk
+```
+
+Для изменения таблицы разделов:
+```shell
+fdisk /dev/диск_для_разметки
+```
+
+Таблица-пример разметки:
+| Точка монтирования | Раздел                    | Тип раздела        | Рекомендуемый размер     |
+|:-------------------|:--------------------------|:-------------------|:-------------------------|
+|/boot               |/dev/*системный_раздел_efi*|Системный раздел EFI|1 ГиБ                     |
+|[SWAP]              |/dev/*раздел_подкачки*     |Linux swap          |Не менее 4 ГиБ(x2RAM)     |
+|/                   |/dev/*корневой_раздел*     |Linux x86-64 root   |Остаток, минимум 23–32 ГиБ|
+|/home               |/dev/*домашний_раздел*     |Linux lifesystem    |Остаток                   |
+
+## Форматирование разделов
+/boot:
+```shell
+mkfs.ext4 /dev/корневой_раздел
+```
+[SWAP]:
+```shell
+mkswap /dev/раздел_подкачки_Linux swap
+```
+/:
+```shell
+mkfs.fat -F 32 /dev/системный_раздел_efi
+```
+/home:
+```shell
+mkfs.ext4 /dev/домашний_католог_home
+```
+
+## Монтирование разделов
+/boot:
+```shell
+mount --mkdir /dev/системный_раздел_efi /mnt/boot
+```
+/:
+```shell
+mount /dev/корневой_раздел /mnt
+```
+[SWAP]:
+```shell
+swapon /dev/раздел_подкачки
+```
+/home:
+```shell
+mount --mkdir /dev/домашний_раздел /mnt/boot
+```
+Для проверки верности монтирования:
+```shell
+lsblk
+```
+
+# 2. Установка
+Установка основных пакетов:
+```shell
+pacstrap -K /mnt base linux linux-firmware
+```
+
+
+# 3. Настройка
+Сгенерировать файл fstab:
+```shell
+genfstab -U /mnt >> /mnt/etc/fstab
+```
+
+***
+
+Перейти к корневому каталогу новой системы:
+```shell
+arch-chroot /mnt
+```
+
+Задать часовой пояс:
+```shell
+ln -sf /usr/share/zoneinfo/Регион/Город /etc/localtime
+```
+Сгенерировать ```/etc/adjtime```:
+```shell
+hwclock --systohc
+```
+
+***
+
+Установить ```nano```:
+```shell
+pacman -Sy nano
+```
+
+***
+
+Создать файл ```locale.conf```:
+```shell
+nano /etc/locale.gen
+```
+>И задать переменной LANG необходимое значение:
+> ```
+> LANG=ru_RU.UTF-8
+> ```
+
+Отредактировать файл ```/etc/locale.gen```:
+
+```shell
+nano /etc/locale.gen
+```
+>Раскомментировать:
+>```shell
+>#en_US.UTF-8 UTF-8
+>```
+>и другие необходимые UTF-8 локали, например:
+>```shell
+>#ru_RU.UTF-8 UTF-8
+>```
+
+Сгенерировать локали:
+```shell
+locale-gen
+```
+
+Создать файл ```locale.conf```:
+```shell
+nano /etc/locale.conf
+```
+> и задать переменной ```LANG``` необходимое значение:
+>```shell
+>LANG=ru_RU.UTF-8
+
+Сделайте изменения раскладки и шрифта постоянными:
+```shell
+nano /etc/vconsole.conf
+```
+>прописав их в файле ```vconsole.conf```:
+>```shell
+>KEYMAP=ru
+>FONT=cyr-sun16
+>```
+
+***
+
+Создать файл ```hostname```:
+```shell
+nano /etc/hostname
+```
+>и написать туда:  
+>*имявашегохоста*
+
+Установить ```NetworkManager```:
+```shell
+pacman -S networkmanager
+```
+и включаем его:
+```shell
+systemctl enable NetworkManager
+```
+
+***
+
+Установить пароль суперпользователя:
+```shell
+passwd
+```
+Создать нового пользователя:
+```shell
+useradd -m -G wheel -s /bin/bash имяпользователя
+```
+Задать для нового пользователя пароль:
+```shell
+passwd имяпользователя
+```
+Скачать ```sudo```:
+```shell
+pacman -S sudo
+```
+Открыть файл конфигурации:
+```shell
+EDITOR=nano visudo
+```
+> и раскомментировать строку:
+>```shell
+># %wheel ALL=(ALL:ALL) ALL
+>```
+
+***
+Скачать загрузчик ```grub```:
+```shell
+pacman -S grub efibootmgr
+```
+Установить его:
+```shell
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
+```
+Сгенерировать конфиг ```GRUB```:
+```shell
+grub-mkconfig -o /boot/grub/grub.cfg
+```
+***
+
+Выйти из ```chroot```:
+```shell
+exit
+```
+Размонтировать все разделы:
+```shell
+umount -R /mnt
+```
+Выключить систему:
+```shell
+poweroff
+```
+
+> [!IMPORTANT]  
+> Перед повторным включением вытащите установочную флешку
+
+***
+
+# 4. Уже внутри системы
+## Подключение к wifi
+Список доступных подключений:
+```shell
+nmcli connection show
+```
+Список активных устройств:
+```shell
+nmcli device status
+```
+Сканируйте доступные сети:
+```shell
+nmcli device wifi list
+```
+Подключится к выбранной сети:
+```shell
+nmcli device wifi connect "имя_сети" password "пароль"
+```
