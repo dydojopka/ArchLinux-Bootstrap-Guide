@@ -1,14 +1,18 @@
 <div align="center">
 
 # ArchLinux-Bootstrap-Guide
-
+Это личная памятка по bootstrapping'у с командами, созданная на основе гайда по установке на [Arch wiki](https://wiki.archlinux.org/title/Installation_guide)
 </div>
 
 # 1. Перед установкой
 
 ## Установка раскладки клавиатуры и шрифта
+Установка раскладки клавиатуры:
 ```shell
 loadkeys ru
+```
+Установка шрифта:
+```shell
 setfont ter-c32b
 ```
 
@@ -25,23 +29,23 @@ device list
 > [!IMPORTANT]
 > Если устройство или соответствующий адаптер выключен, включите его:
 > ```shell
-> device *устройство* set-property Powered on
-> adapter *адаптер* set-property Powered on
+> device устройство set-property Powered on
+> adapter адаптер set-property Powered on
 > ```
 
 Запустить сканирование сети (команда ничего не выведет):
 ```shell
-station *устройство* scan
+station устройство scan
 ```
 
 Вывести список обнаруженных сетей:
 ```shell
-station *устройство* get-networks
+station устройство get-networks
 ```
 
 Подключится к сети:
 ```shell
-station устройство connect *SSID*
+station устройство connect SSID
 ```
 
 Выйти из [iwd]: 
@@ -126,6 +130,7 @@ pacstrap -K /mnt base linux linux-firmware
 
 
 # 3. Настройка
+## Fstab
 Сгенерировать файл fstab:
 ```shell
 genfstab -U /mnt >> /mnt/etc/fstab
@@ -133,11 +138,14 @@ genfstab -U /mnt >> /mnt/etc/fstab
 
 ***
 
+## Chroot
 Перейти к корневому каталогу новой системы:
 ```shell
 arch-chroot /mnt
 ```
+***
 
+## Время
 Задать часовой пояс:
 ```shell
 ln -sf /usr/share/zoneinfo/Регион/Город /etc/localtime
@@ -149,12 +157,11 @@ hwclock --systohc
 
 ***
 
+## Локализация
 Установить ```nano```:
 ```shell
 pacman -Sy nano
 ```
-
-***
 
 Создать файл ```locale.conf```:
 ```shell
@@ -204,6 +211,7 @@ nano /etc/vconsole.conf
 
 ***
 
+## Настройка сети
 Создать файл ```hostname```:
 ```shell
 nano /etc/hostname
@@ -222,10 +230,12 @@ systemctl enable NetworkManager
 
 ***
 
+## Cуперпользователь
 Установить пароль суперпользователя:
 ```shell
 passwd
 ```
+## Новый пользователь
 Создать нового пользователя:
 ```shell
 useradd -m -G wheel -s /bin/bash имяпользователя
@@ -248,6 +258,8 @@ EDITOR=nano visudo
 >```
 
 ***
+
+## Загрузчик
 Скачать загрузчик ```grub```:
 ```shell
 pacman -S grub efibootmgr
@@ -260,8 +272,10 @@ grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 ```shell
 grub-mkconfig -o /boot/grub/grub.cfg
 ```
+
 ***
 
+# 4. Перезагрузка
 Выйти из ```chroot```:
 ```shell
 exit
@@ -280,7 +294,7 @@ poweroff
 
 ***
 
-# 4. Уже внутри системы
+# 5. После установки
 ## Подключение к wifi
 Список доступных подключений:
 ```shell
