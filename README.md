@@ -2,6 +2,8 @@
 
 # ArchLinux-Bootstrap-Guide
 Это личная памятка по bootstrapping'у с командами, созданная на основе гайда по установке на [Arch wiki](https://wiki.archlinux.org/title/Installation_guide)
+
+![arch_users](Source/arch_users.PNG)
 </div>
 
 # 1. Перед установкой
