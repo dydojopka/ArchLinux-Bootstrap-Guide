@@ -90,15 +90,15 @@ fdisk /dev/диск_для_разметки
 ## Форматирование разделов
 /boot:
 ```shell
-mkfs.ext4 /dev/корневой_раздел
+mkfs.fat -F 32 /dev/системный_раздел_efi
 ```
 [SWAP]:
 ```shell
-mkswap /dev/раздел_подкачки_Linux swap
+mkswap /dev/раздел_подкачки_Linux_swap
 ```
 /:
 ```shell
-mkfs.fat -F 32 /dev/системный_раздел_efi
+mkfs.ext4 /dev/корневой_раздел
 ```
 /home:
 ```shell
@@ -110,17 +110,17 @@ mkfs.ext4 /dev/домашний_католог_home
 ```shell
 mount --mkdir /dev/системный_раздел_efi /mnt/boot
 ```
-/:
-```shell
-mount /dev/корневой_раздел /mnt
-```
 [SWAP]:
 ```shell
 swapon /dev/раздел_подкачки
 ```
+/:
+```shell
+mount /dev/корневой_раздел /mnt
+```
 /home:
 ```shell
-mount --mkdir /dev/домашний_раздел /mnt/boot
+mount --mkdir /dev/домашний_раздел /mnt/home
 ```
 Для проверки верности монтирования:
 ```shell
