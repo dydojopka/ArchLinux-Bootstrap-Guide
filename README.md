@@ -168,15 +168,6 @@ hwclock --systohc
 pacman -Sy nano
 ```
 
-Создать файл ```locale.conf```:
-```shell
-nano /etc/locale.gen
-```
->И задать переменной ```LANG``` необходимое значение:
-> ```
-> LANG=ru_RU.UTF-8
-> ```
-
 Отредактировать файл ```/etc/locale.gen```:
 
 ```shell
